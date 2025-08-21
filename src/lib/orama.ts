@@ -45,10 +45,17 @@ export const getDB = async (): Promise<Orama<Schema>> => {
     }
   } else {
     console.log('[Orama] Fetching prebuilt DB from public directory...');
-    const url = 'https://your-domain.vercel.app/data/orama-db.bin'; // Replace if needed
+    const url = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}/data/orama-db.bin`
+      : `http://localhost:3000/data/orama-db.bin`;
     const res = await axios.get<ArrayBuffer>(url, {
       responseType: 'arraybuffer',
     });
+    console.log(
+      '[Orama] Restoring DB from remote file...',
+      res.data.byteLength,
+      'bytes',
+    );
     db = (await restore('binary', Buffer.from(res.data))) as Orama<Schema>;
   }
 
