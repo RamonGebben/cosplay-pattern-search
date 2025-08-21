@@ -3,8 +3,10 @@ import {
   persistToFile,
   restoreFromFile,
 } from '@orama/plugin-data-persistence/server';
+import { restore } from '@orama/plugin-data-persistence';
 import fs from 'fs';
 import path from 'path';
+import axios from 'axios';
 import { PatternDoc, Schema } from './types';
 import { SYNONYM_GROUPS } from './synonyms';
 import { singularize } from 'inflection';
@@ -20,33 +22,41 @@ export const schema = {
   tags: 'string[]',
 } as const;
 
-// Path to DB file
-const DB_FILE = path.resolve(process.cwd(), 'data', 'orama-db.bin');
+// Path used for dev persistence
+const DB_FILE = path.resolve(process.cwd(), 'public', 'data', 'orama-db.bin');
 
-// Global cache for DB instance
+// Global DB cache
 const globalForOrama = globalThis as unknown as {
   oramaDB?: Orama<Schema>;
 };
 
-// Lazy init and load from disk if possible
 export const getDB = async (): Promise<Orama<Schema>> => {
   if (globalForOrama.oramaDB) return globalForOrama.oramaDB;
 
   let db: Orama<Schema>;
 
-  if (fs.existsSync(DB_FILE)) {
-    console.log('[Orama] Restoring DB from disk...');
-    db = (await restoreFromFile('binary', DB_FILE)) as Orama<Schema>;
+  if (process.env.NODE_ENV === 'development') {
+    if (fs.existsSync(DB_FILE)) {
+      console.log('[Orama] Restoring DB from local file...');
+      db = (await restoreFromFile('binary', DB_FILE)) as Orama<Schema>;
+    } else {
+      console.log('[Orama] Creating new DB (no local file found)...');
+      db = await create({ schema });
+    }
   } else {
-    console.log('[Orama] Creating fresh DB...');
-    db = await create({ schema });
+    console.log('[Orama] Fetching prebuilt DB from public directory...');
+    const url = 'https://your-domain.vercel.app/data/orama-db.bin'; // Replace if needed
+    const res = await axios.get<ArrayBuffer>(url, {
+      responseType: 'arraybuffer',
+    });
+    db = (await restore('binary', Buffer.from(res.data))) as Orama<Schema>;
   }
 
   globalForOrama.oramaDB = db;
   return db;
 };
 
-// Sanitize and normalize tags
+// Tag cleanup
 const sanitizeTags = (tags: unknown): string[] => {
   if (!Array.isArray(tags)) return [];
   return Array.from(
@@ -58,7 +68,7 @@ const sanitizeTags = (tags: unknown): string[] => {
   );
 };
 
-// Index new patterns and persist to disk (in dev)
+// Index patterns and persist in dev
 export const indexPatterns = async (patterns: PatternDoc[]): Promise<void> => {
   const db = await getDB();
 
@@ -66,7 +76,6 @@ export const indexPatterns = async (patterns: PatternDoc[]): Promise<void> => {
     try {
       await remove(db, pattern.id);
     } catch (err) {
-      // It's okay if it doesn't exist yet
       if (
         !(err instanceof Error && err.message.includes('DOCUMENT_NOT_FOUND'))
       ) {
@@ -93,20 +102,20 @@ export const indexPatterns = async (patterns: PatternDoc[]): Promise<void> => {
   }
 };
 
+// Tag normalization
 export const getCanonicalTag = (word: string): string | null => {
   const normalized = singularize(word.toLowerCase());
   for (const group of SYNONYM_GROUPS) {
     if (group.includes(normalized)) {
-      return group[0]; // Use first in group as canonical
+      return group[0];
     }
   }
   return null;
 };
 
-// Expand query with synonyms
+// Expand search terms with synonyms
 export const expandQueryWithSynonyms = (q: string): string => {
   const words = q.toLowerCase().split(/\s+/);
-
   const expanded = new Set<string>();
 
   for (const word of words) {
@@ -123,7 +132,7 @@ export const expandQueryWithSynonyms = (q: string): string => {
   return [...expanded].join(' ');
 };
 
-// Search interface
+// Pattern search
 export const searchPatterns = async (query: string) => {
   const db = await getDB();
   return await search(db, {

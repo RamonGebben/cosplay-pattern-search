@@ -11,6 +11,7 @@
   "dependencies": {
     "@orama/orama": "^3.1.11",
     "@orama/plugin-data-persistence": "^3.1.11",
+    "axios": "^1.11.0",
     "cheerio": "^1.1.2",
     "inflection": "^3.0.2",
     "next": "15.5.0",
