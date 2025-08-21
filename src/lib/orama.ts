@@ -46,7 +46,7 @@ export const getDB = async (): Promise<Orama<Schema>> => {
   } else {
     console.log('[Orama] Fetching prebuilt DB from public directory...');
     const url = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/data/orama-db.bin`
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}/data/orama-db.bin`
       : `http://localhost:3000/data/orama-db.bin`;
     console.log('[Orama] DB URL:', url);
     const res = await axios.get<ArrayBuffer>(url, {
