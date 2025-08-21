@@ -1,15 +1,19 @@
 import { chromium } from 'playwright';
 import * as cheerio from 'cheerio';
-import type { PatternDoc } from '../../orama';
+import { deriveTagsFromPattern } from '@/lib/tagger';
+import { PatternDoc } from '@/lib/types';
 
 export const scrapeKinpatsu = async (): Promise<PatternDoc[]> => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
   // Load all products at once using the ?per_page trick
-  await page.goto('https://kinpatsucosplay.com/products/?per_page=999&layout=list', {
-    waitUntil: 'domcontentloaded',
-  });
+  await page.goto(
+    'https://kinpatsucosplay.com/products/?per_page=999&layout=list',
+    {
+      waitUntil: 'domcontentloaded',
+    },
+  );
 
   const html = await page.content();
   const $ = cheerio.load(html);
@@ -24,15 +28,18 @@ export const scrapeKinpatsu = async (): Promise<PatternDoc[]> => {
     const price = $el.find('.price').text().trim();
 
     if (title && url) {
-      results.push({
+      const pattern: PatternDoc = {
         id: `kinpatsu-${url}`,
         title,
         url,
         image: image.startsWith('http') ? image : `https:${image}`,
         price,
         source: 'kinpatsucosplay.com',
-        tags: [], // Optional: extract from classes or product title
-      });
+        tags: [],
+      };
+      const _tags = deriveTagsFromPattern(pattern);
+
+      results.push({ ...pattern, tags: _tags });
     }
   });
 

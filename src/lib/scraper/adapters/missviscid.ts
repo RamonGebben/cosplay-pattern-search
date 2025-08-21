@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import * as cheerio from 'cheerio';
-import type { PatternDoc } from '../../orama';
+import { PatternDoc } from '@/lib/types';
+import { deriveTagsFromPattern } from '@/lib/tagger';
 
 const BASE = 'https://www.missviscid-designs.com';
 const ALL_PATTERNS_URL = `${BASE}/page-en/all-patterns-18390`;
@@ -25,7 +26,7 @@ export const scrapeMissviscid = async (): Promise<PatternDoc[]> => {
     const price = $el.find('.product-price').text().trim();
 
     if (href && title) {
-      results.push({
+      const pattern: PatternDoc = {
         id: `missviscid-${href}`,
         title,
         url: href.startsWith('http') ? href : `${BASE}${href}`,
@@ -33,7 +34,9 @@ export const scrapeMissviscid = async (): Promise<PatternDoc[]> => {
         price,
         source: 'missviscid-designs.com',
         tags: [],
-      });
+      };
+      const _tags = deriveTagsFromPattern(pattern);
+      results.push({ ...pattern, tags: _tags });
     }
   });
 

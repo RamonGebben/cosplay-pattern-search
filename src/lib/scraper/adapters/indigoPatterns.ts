@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import * as cheerio from 'cheerio';
-import type { PatternDoc } from '../../orama';
+import { PatternDoc } from '@/lib/types';
+import { deriveTagsFromPattern } from '@/lib/tagger';
 
 const BASE = 'https://www.indigopatterns.com';
 const START_PAGE = 1;
@@ -20,17 +21,28 @@ export const scrapeIndigoPatterns = async (): Promise<PatternDoc[]> => {
     const $ = cheerio.load(html);
 
     // ❌ Exit if "We don’t have any products to show here right now."
-    const noProducts = $('h2[data-hook="empty-gallery-title"]').text().includes('We don’t have any products');
+    const noProducts = $('h2[data-hook="empty-gallery-title"]')
+      .text()
+      .includes('We don’t have any products');
     if (noProducts) break;
 
     $('li[data-hook="product-list-grid-item"]').each((_, el) => {
       const $el = $(el);
 
       const title = $el.find('[data-hook="product-item-name"]').text().trim();
-      const href = $el.find('a[data-hook="product-item-container"]').attr('href') || '';
+      const href =
+        $el.find('a[data-hook="product-item-container"]').attr('href') || '';
       const price =
-        $el.find('[data-hook="product-item-price-to-pay"]').first().text().trim() ||
-        $el.find('[data-hook="product-item-price-before-discount"]').first().text().trim();
+        $el
+          .find('[data-hook="product-item-price-to-pay"]')
+          .first()
+          .text()
+          .trim() ||
+        $el
+          .find('[data-hook="product-item-price-before-discount"]')
+          .first()
+          .text()
+          .trim();
 
       // High-quality image from data-image-info
       let image = '';
@@ -50,11 +62,15 @@ export const scrapeIndigoPatterns = async (): Promise<PatternDoc[]> => {
       // Fallback to low-res image if needed
       if (!image) {
         const fallback = $el.find('img').first().attr('src') || '';
-        image = fallback.startsWith('http') ? fallback : fallback.startsWith('//') ? `https:${fallback}` : `${BASE}${fallback}`;
+        image = fallback.startsWith('http')
+          ? fallback
+          : fallback.startsWith('//')
+          ? `https:${fallback}`
+          : `${BASE}${fallback}`;
       }
 
       if (title && href) {
-        results.push({
+        const pattern: PatternDoc = {
           id: `indigopatterns-${href}`,
           title,
           url: href.startsWith('http') ? href : `${BASE}${href}`,
@@ -62,7 +78,9 @@ export const scrapeIndigoPatterns = async (): Promise<PatternDoc[]> => {
           price,
           source: 'indigopatterns.com',
           tags: [],
-        });
+        };
+        const _tags = deriveTagsFromPattern(pattern);
+        results.push({ ...pattern, tags: _tags });
       }
     });
 

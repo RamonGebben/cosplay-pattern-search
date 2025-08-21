@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import * as cheerio from 'cheerio';
-import type { PatternDoc } from '../../orama';
+import { PatternDoc } from '@/lib/types';
+import { deriveTagsFromPattern } from '@/lib/tagger';
 
 const BASE = 'https://ndlwrkshop.com';
 const START_PAGE = 1;
@@ -20,7 +21,9 @@ export const scrapeNdlwrkshop = async (): Promise<PatternDoc[]> => {
     const $ = cheerio.load(html);
 
     // ❌ Exit if "No products found"
-    const noProducts = $('h2.title.title--primary').text().includes('No products found');
+    const noProducts = $('h2.title.title--primary')
+      .text()
+      .includes('No products found');
     if (noProducts) break;
 
     $('#product-grid .product-card-wrapper').each((_, el) => {
@@ -34,7 +37,7 @@ export const scrapeNdlwrkshop = async (): Promise<PatternDoc[]> => {
         $el.find('.price-item--regular').first().text().trim();
 
       if (title && href) {
-        results.push({
+        const pattern: PatternDoc = {
           id: `ndlwrkshop-${href}`,
           title,
           url: href.startsWith('http') ? href : `${BASE}${href}`,
@@ -42,7 +45,9 @@ export const scrapeNdlwrkshop = async (): Promise<PatternDoc[]> => {
           price,
           source: 'ndlwrkshop.com',
           tags: [],
-        });
+        };
+        const _tags = deriveTagsFromPattern(pattern);
+        results.push({ ...pattern, tags: _tags });
       }
     });
 

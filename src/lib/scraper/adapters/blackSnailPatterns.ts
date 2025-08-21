@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import * as cheerio from 'cheerio';
-import type { PatternDoc } from '../../orama';
+
+import { deriveTagsFromPattern } from '@/lib/tagger';
+import { PatternDoc } from '@/lib/types';
 
 const BASE = 'https://blacksnailpatterns.com';
 const COLLECTIONS = [
@@ -11,7 +13,7 @@ const COLLECTIONS = [
   '/en/collections/pdf-women-1790-1820',
   '/en/collections/pdf-women-1820-1860',
   '/en/collections/pdf-women-1860-1910',
-  '/en/collections/pdf-kinder'
+  '/en/collections/pdf-kinder',
 ];
 
 export const scrapeBlackSnailPatterns = async (): Promise<PatternDoc[]> => {
@@ -38,7 +40,7 @@ export const scrapeBlackSnailPatterns = async (): Promise<PatternDoc[]> => {
       const img = $el.find('.card__media img').first().attr('src') || '';
 
       if (title && href) {
-        results.push({
+        const pattern = {
           id: `black-snail-${href}`,
           title,
           url: href.startsWith('http') ? href : `${BASE}${href}`,
@@ -46,7 +48,9 @@ export const scrapeBlackSnailPatterns = async (): Promise<PatternDoc[]> => {
           price,
           source: 'blacksnailpatterns.com',
           tags: [],
-        });
+        };
+        const _tags = deriveTagsFromPattern(pattern);
+        results.push({ ...pattern, tags: _tags });
       }
     });
   }
