@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Footer from './components/Footer';
+import PlausibleProvider from 'next-plausible';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,7 +29,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-brand-background text-brand-text`}
       >
-        {children}
+        <PlausibleProvider domain="pattern-finder.masquerademedia.nl">
+          {children}
+        
+        </PlausibleProvider>
         <Footer />
       </body>
     </html>
