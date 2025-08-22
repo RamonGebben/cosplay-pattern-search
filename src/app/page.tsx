@@ -47,11 +47,13 @@ export default function HomePage() {
       {/* Hero */}
       <header className="text-center mb-12">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://masquerademedia.nl/wp-content/uploads/2025/08/Wide-logo-300x87.png"
-          alt="Cosplay Pattern Logo"
-          className="w-48 h-auto mb-4 inline-block"
-        />
+        <a href="https://masquerademedia.nl">
+          <img
+            src="https://masquerademedia.nl/wp-content/uploads/2025/08/Wide-logo-300x87.png"
+            alt="Cosplay Pattern Logo"
+            className="w-48 h-auto mb-4 inline-block"
+          />
+        </a>
         <h1 className="text-4xl sm:text-5xl font-heading font-semibold text-primary mb-2">
           Cosplay Pattern Search
         </h1>
