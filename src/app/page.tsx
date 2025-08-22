@@ -53,7 +53,7 @@ export default function HomePage() {
         </p>
         <p className="text-muted text-sm inline-block mb-1">
           Looking for a foam or sewing pattern? Just type in your search query below, and search through patterns by known and beloved, quality pattern makers. </p>
-        <p className="text-muted text-sm inline-block mb-1">Unfortunately it's not possible to look for character names. But you can look for e.g. braces, dresses, jackets, school uniforms, breastplates and more. </p>
+        <p className="text-muted text-sm inline-block mb-1">Unfortunately it&apos;s not possible to look for character names. But you can look for e.g. braces, dresses, jackets, school uniforms, breastplates and more. </p>
         <p className="text-muted text-sm inline-block">Need inspiration? Click the Explore button and explore all patterns we currently have indexed!
         </p>
       </header>
