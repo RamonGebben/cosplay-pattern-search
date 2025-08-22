@@ -1,4 +1,4 @@
-'use client';
+er'use client';
 
 import { useState } from 'react';
 import Link from 'next/link'; // <-- import Link
@@ -60,7 +60,7 @@ export default function HomePage() {
           value={q}
           onChange={e => setQ(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Search patterns e.g bracers, dress, school uniform..."
+          placeholder="Looking for a pattern to create foam armor, a prop or to sew a garment? Just type in your search query below, and search through patterns of known and beloved, quality pattern makers. Unfortunately, due to copyright issues, creators usually cannot mention specific character names in their pattern names. Therefor you cannot search for specific characters, but you can look for e.g. braces, dresses, jackets, school uniforms, breastplates and more. Need inspiration? Click the Explore button and explore all patterns we currently have indexed!"
           aria-label="Search patterns"
           className="flex-grow min-w-[250px] px-4 py-3 rounded-full border border-muted bg-white text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
         />
