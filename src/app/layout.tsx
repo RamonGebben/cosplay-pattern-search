@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Head from 'next/head'
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Footer from './components/Footer';
@@ -27,9 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ scrollBehavior: 'smooth' }}>
-      <Head>
         <Script defer data-domain="pattern-finder.masquerademedia.nl" src="https://plausible.io/js/script.js" />
-      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-brand-background text-brand-text`}
       >
