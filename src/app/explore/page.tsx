@@ -45,14 +45,14 @@ export default function ExplorePage() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-60 bg-brand-background text-brand-text border-r border-brand-muted z-20 transform transition-transform duration-300 ease-in-out md:translate-x-0 bg-white ${
+        className={`fixed top-0 left-0 h-full w-60 bg-brand-background text-brand-text border-r border-gray-200 z-20 transform transition-transform duration-300 ease-in-out md:translate-x-0 bg-white ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } md:block`}
       >
         <div className="h-full overflow-y-auto px-4 py-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://masquerademedia.nl/wp-content/uploads/2025/07/Wide-logo-1.png"
+            src="https://masquerademedia.nl/wp-content/uploads/2025/08/Wide-logo-300x87.png"
             alt="Logo"
             className="w-full h-auto mb-4"
           />

@@ -8,7 +8,7 @@ import { PatternDoc } from '@/lib/types';
 export default function HomePage() {
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<PatternDoc[]>([]);
+  const [results, setResults] = useState<PatternDoc[] | null>(null);
 
   const canSearch = q.trim().length > 0;
 
@@ -41,7 +41,7 @@ export default function HomePage() {
       <header className="text-center mb-12">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://masquerademedia.nl/wp-content/uploads/2025/07/Wide-logo-1.png"
+          src="https://masquerademedia.nl/wp-content/uploads/2025/08/Wide-logo-300x87.png"
           alt="Cosplay Pattern Logo"
           className="w-48 h-auto mb-4 inline-block"
         />
@@ -60,7 +60,7 @@ export default function HomePage() {
           value={q}
           onChange={e => setQ(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Search patterns..."
+          placeholder="Search patterns e.g bracers, dress, school uniform..."
           aria-label="Search patterns"
           className="flex-grow min-w-[250px] px-4 py-3 rounded-full border border-muted bg-white text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
         />
@@ -68,22 +68,28 @@ export default function HomePage() {
         <button
           onClick={doSearch}
           disabled={!canSearch || loading}
-          className="px-5 py-3 rounded-full font-semibold bg-purple-800 text-white hover:bg-purple-900 cursor-pointer"
+          className="px-5 py-3 rounded-full font-semibold bg-purple-800 text-white hover:bg-purple-600 cursor-pointer"
         >
           {loading ? 'Searching...' : 'Search'}
         </button>
+        {/* Explore Link */}
+        <Link
+          href="/explore"
+          className="px-5 py-3 rounded-full font-semibold bg-yellow-500 hover:bg-yellow-400 cursor-pointer text-header-black transition"
+        >
+          Explore Patterns
+        </Link>
       </section>
 
-      {/* Explore Link */}
-      <Link
-        href="/explore"
-        className="mb-10 inline-block px-5 py-3 rounded-full font-semibold bg-primary-gold text-header-black hover:bg-yellow-500 transition"
-      >
-        Explore Patterns
-      </Link>
-
       {/* Results */}
-      <ResultsGrid results={results} />
+      {!results && !loading && (
+        <>
+          <p className="text-center text-muted">
+            Start by entering a search term above.
+          </p>
+        </>
+      )}
+      {results !== null && <ResultsGrid results={results} />}
     </main>
   );
 }
