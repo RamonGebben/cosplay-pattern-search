@@ -1,11 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link'; // <-- import Link
+import Link from 'next/link';
+import { usePlausible } from 'next-plausible'
 import ResultsGrid from './components/ResultsGrid';
 import { PatternDoc } from '@/lib/types';
 
+type MyEvents = {
+  search: { q: string }
+}
+
 export default function HomePage() {
+  const plausible = usePlausible<MyEvents>()
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<PatternDoc[] | null>(null);
@@ -17,6 +23,7 @@ export default function HomePage() {
     setLoading(true);
 
     try {
+      plausible('search', { props: { q } })
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
       const json = await res.json();
       console.log('Search results:', json);
