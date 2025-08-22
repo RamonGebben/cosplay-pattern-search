@@ -36,7 +36,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="p-6 max-w-6xl mx-auto font-body text-text min-h-screen flex justify-center items-center flex-col w-full">
+    <main className="p-6 max-w-6xl mx-auto mb-16 font-body text-text min-h-screen flex justify-center items-center flex-col w-full">
       {/* Hero */}
       <header className="text-center mb-12">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -48,11 +48,13 @@ export default function HomePage() {
         <h1 className="text-4xl sm:text-5xl font-heading font-semibold text-primary mb-2">
           Cosplay Pattern Search
         </h1>
-        <p className="text-muted text-lg">
+        <p className="text-muted text-lg mb-4">
           Discover quality cosplay patterns faster than ever
         </p>
-        <p className="text-muted text-sm">
-          Looking for a pattern to create foam armor, a prop or to sew a garment? Just type in your search query below, and search through patterns of known and beloved, quality pattern makers. Unfortunately, due to copyright issues, creators usually cannot mention specific character names in their pattern names. Therefor you cannot search for specific characters, but you can look for e.g. braces, dresses, jackets, school uniforms, breastplates and more. Need inspiration? Click the Explore button and explore all patterns we currently have indexed!
+        <p className="text-muted text-sm inline-block mb-1">
+          Looking for a foam or sewing pattern? Just type in your search query below, and search through patterns by known and beloved, quality pattern makers. </p>
+        <p className="text-muted text-sm inline-block mb-1">Unfortunately it's not possible to look for character names. But you can look for e.g. braces, dresses, jackets, school uniforms, breastplates and more. </p>
+        <p className="text-muted text-sm inline-block">Need inspiration? Click the Explore button and explore all patterns we currently have indexed!
         </p>
       </header>
 
